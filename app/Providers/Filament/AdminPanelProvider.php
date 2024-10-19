@@ -2,11 +2,21 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\DistrictResource;
+use App\Filament\Resources\ProvinceResource;
+use App\Filament\Resources\RegencyResource;
+use App\Filament\Resources\Shield\RoleResource;
+use App\Filament\Resources\UserResource;
+use App\Filament\Resources\VillageResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
+use Filament\Navigation\NavigationBuilder;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
+use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -50,11 +60,48 @@ class AdminPanelProvider extends PanelProvider
         Widgets\FilamentInfoWidget::class,
       ])
       ->topNavigation()
+      ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
+        return $builder
+          ->items([
+            NavigationItem::make('Dashboard')
+              ->icon('heroicon-o-home')
+              ->isActiveWhen(fn(): bool => request()->routeIs('filament.admin.pages.dashboard'))
+              ->url(fn(): string => Dashboard::getUrl()),
+          ])
+          ->groups([
+            NavigationGroup::make('User Managements')
+              ->items([
+                ...UserResource::getNavigationItems(),
+                ...RoleResource::getNavigationItems(),
+              ]),
+            NavigationGroup::make('Region Managements')
+              ->items([
+                ...ProvinceResource::getNavigationItems(),
+                ...RegencyResource::getNavigationItems(),
+                ...DistrictResource::getNavigationItems(),
+                ...VillageResource::getNavigationItems(),
+              ]),
+          ]);
+      })
       ->userMenuItems([
         'profile' => MenuItem::make()->label('Edit profile'),
       ])
       ->plugins([
         \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+          ->gridColumns([
+            'default' => 1,
+            'sm' => 2,
+            'lg' => 3
+          ])
+          ->sectionColumnSpan(1)
+          ->checkboxListColumns([
+            'default' => 1,
+            'sm' => 2,
+          ])
+          ->resourceCheckboxListColumns([
+            'default' => 1,
+            'sm' => 2,
+          ]),
       ])
       ->middleware([
         EncryptCookies::class,

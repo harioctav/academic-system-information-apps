@@ -20,6 +20,6 @@ class UserSeeder extends Seeder
       'email_verified_at' => now(),
       'password' => bcrypt('password'), // password
       'status' => true,
-    ])->assignRole(UserRole::ADMIN->value);
+    ]);
   }
 }

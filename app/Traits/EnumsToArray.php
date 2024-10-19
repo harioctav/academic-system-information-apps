@@ -25,6 +25,27 @@ trait EnumsToArray
     return $selectedCases;
   }
 
+  public static function toSelectArray(...$indexes)
+  {
+    $cases = self::cases();
+    $selectedCases = [];
+
+    foreach ($indexes as $index) {
+      if (array_key_exists($index, $cases)) {
+        $selectedCases[$cases[$index]->value] = $cases[$index]->value;
+      }
+    }
+
+    if (empty($selectedCases)) {
+      return array_reduce($cases, function ($carry, $item) {
+        $carry[$item->value] = $item->value;
+        return $carry;
+      }, []);
+    }
+
+    return $selectedCases;
+  }
+
   public static function toValidation(...$indexes)
   {
     $cases = self::cases();

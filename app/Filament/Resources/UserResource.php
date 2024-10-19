@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\GeneralConstant;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
@@ -12,14 +13,13 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 
 class UserResource extends Resource
 {
   protected static ?string $model = User::class;
 
   protected static ?string $navigationIcon = 'heroicon-o-users';
-
-  protected static ?string $navigationGroup = 'User Managements';
 
   public static function getNavigationBadge(): ?string
   {
@@ -31,37 +31,66 @@ class UserResource extends Resource
     return static::getModel()::count() > 10 ? 'warning' : 'primary';
   }
 
-  protected static ?string $navigationBadgeTooltip = 'The number of users';
 
   public static function form(Form $form): Form
   {
     return $form
       ->schema([
-        Forms\Components\TextInput::make('name')
-          ->required()
-          ->maxLength(255),
-        Forms\Components\TextInput::make('email')
-          ->email()
-          ->required()
-          ->maxLength(255),
-        Forms\Components\TextInput::make('phone')
-          ->tel()
-          ->maxLength(255),
-        Forms\Components\DateTimePicker::make('email_verified_at'),
-        Forms\Components\TextInput::make('password')
-          ->password()
-          ->required()
-          ->maxLength(255),
-        Forms\Components\Textarea::make('avatar')
-          ->columnSpanFull(),
-        Forms\Components\Toggle::make('status')
-          ->required(),
+        Forms\Components\Section::make()
+          ->schema([
+            Forms\Components\TextInput::make('name')
+              ->required()
+              ->label('Nama Pengguna')
+              ->placeholder('Masukkan Nama Pengguna')
+              ->maxLength(50),
+            Forms\Components\TextInput::make('email')
+              ->email()
+              ->required()
+              ->label('Email')
+              ->placeholder('Masukkan Email')
+              ->maxLength(50),
+            Forms\Components\TextInput::make('phone')
+              ->nullable()
+              ->tel()
+              ->label('Telepon')
+              ->placeholder('Masukkan No. Telepon')
+              ->maxLength(14),
+          ])->columns(3),
+
+        Forms\Components\Grid::make(2)
+          ->schema([
+            Forms\Components\Section::make()
+              ->schema([
+                Forms\Components\FileUpload::make('avatar')
+                  ->avatar()
+                  ->disk('public')
+                  ->directory('images/users')
+                  ->visibility('public')
+                  ->maxSize(2048)
+                  ->extraAttributes(['class' => 'flex items-center justify-center']),
+              ])->columnSpan(1),
+            Forms\Components\Section::make()
+              ->schema([
+                Forms\Components\Select::make('status')
+                  ->options(
+                    Collection::make(GeneralConstant::cases())->mapWithKeys(fn(GeneralConstant $enum) => [$enum->value => $enum->label()])
+                  )
+                  ->enum(GeneralConstant::class)
+                  ->native(false),
+                Forms\Components\Select::make('roles')
+                  ->relationship(name: 'roles', titleAttribute: 'name')
+                  ->searchable()
+                  ->preload()
+                  ->required(),
+              ])->columnSpan(1),
+          ]),
       ]);
   }
 
   public static function table(Table $table): Table
   {
     return $table
+      ->defaultPaginationPageOption(5)
       ->columns([
         Tables\Columns\TextColumn::make('uuid')
           ->label('UUID')
