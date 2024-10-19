@@ -19,7 +19,15 @@ class UserResource extends Resource
 {
   protected static ?string $model = User::class;
 
-  protected static ?string $navigationIcon = 'heroicon-o-users';
+  public static function getNavigationIcon(): string
+  {
+    return __('pages-users::page.nav.user.icon');
+  }
+
+  public static function getNavigationLabel(): string
+  {
+    return trans('pages-users::page.nav.user.label');
+  }
 
   public static function getNavigationBadge(): ?string
   {
@@ -30,7 +38,6 @@ class UserResource extends Resource
   {
     return static::getModel()::count() > 10 ? 'warning' : 'primary';
   }
-
 
   public static function form(Form $form): Form
   {

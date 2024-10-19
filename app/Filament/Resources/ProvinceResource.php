@@ -17,7 +17,15 @@ class ProvinceResource extends Resource
 {
   protected static ?string $model = Province::class;
 
-  protected static ?string $navigationIcon = 'heroicon-o-globe-alt';
+  public static function getNavigationIcon(): string
+  {
+    return __('pages-provinces::page.nav.province.icon');
+  }
+
+  public static function getNavigationLabel(): string
+  {
+    return trans('pages-provinces::page.nav.province.label');
+  }
 
   public static function getNavigationBadge(): ?string
   {

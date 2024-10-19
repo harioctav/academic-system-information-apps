@@ -17,7 +17,15 @@ class DistrictResource extends Resource
 {
   protected static ?string $model = District::class;
 
-  protected static ?string $navigationIcon = 'heroicon-o-home-modern';
+  public static function getNavigationIcon(): string
+  {
+    return __('pages-districts::page.nav.district.icon');
+  }
+
+  public static function getNavigationLabel(): string
+  {
+    return trans('pages-districts::page.nav.district.label');
+  }
 
   public static function getNavigationBadge(): ?string
   {

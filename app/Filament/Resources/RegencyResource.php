@@ -20,7 +20,15 @@ class RegencyResource extends Resource
 {
   protected static ?string $model = Regency::class;
 
-  protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
+  public static function getNavigationIcon(): string
+  {
+    return __('pages-regencies::page.nav.regency.icon');
+  }
+
+  public static function getNavigationLabel(): string
+  {
+    return trans('pages-regencies::page.nav.regency.label');
+  }
 
   public static function getNavigationBadge(): ?string
   {

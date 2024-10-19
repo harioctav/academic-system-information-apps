@@ -59,7 +59,7 @@ class AdminPanelProvider extends PanelProvider
         Widgets\AccountWidget::class,
         Widgets\FilamentInfoWidget::class,
       ])
-      ->topNavigation()
+      // ->topNavigation()
       ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
         return $builder
           ->items([
@@ -69,12 +69,12 @@ class AdminPanelProvider extends PanelProvider
               ->url(fn(): string => Dashboard::getUrl()),
           ])
           ->groups([
-            NavigationGroup::make('User Managements')
+            NavigationGroup::make(__('pages-users::page.nav.group'))
               ->items([
                 ...UserResource::getNavigationItems(),
                 ...RoleResource::getNavigationItems(),
               ]),
-            NavigationGroup::make('Region Managements')
+            NavigationGroup::make(__('pages-provinces::page.nav.group'))
               ->items([
                 ...ProvinceResource::getNavigationItems(),
                 ...RegencyResource::getNavigationItems(),

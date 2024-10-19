@@ -17,7 +17,15 @@ class VillageResource extends Resource
 {
   protected static ?string $model = Village::class;
 
-  protected static ?string $navigationIcon = 'heroicon-o-map-pin';
+  public static function getNavigationIcon(): string
+  {
+    return __('pages-villages::page.nav.village.icon');
+  }
+
+  public static function getNavigationLabel(): string
+  {
+    return trans('pages-villages::page.nav.village.label');
+  }
 
   public static function getNavigationBadge(): ?string
   {
