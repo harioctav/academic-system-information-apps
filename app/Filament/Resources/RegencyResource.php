@@ -13,6 +13,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\DatePicker as FilterDatePicker;
+use Illuminate\Support\Carbon;
 
 class RegencyResource extends Resource
 {
@@ -85,8 +87,46 @@ class RegencyResource extends Resource
           ->toggleable(isToggledHiddenByDefault: true),
       ])
       ->filters([
-        //
-      ])
+        Tables\Filters\SelectFilter::make('Province')
+          ->relationship('province', 'name')
+          ->label('Filter by Province')
+          ->searchable()
+          ->preload()
+          ->indicator('Province'),
+
+        Tables\Filters\Filter::make('created_at')
+          ->form([
+            FilterDatePicker::make('created_from'),
+            FilterDatePicker::make('created_until'),
+          ])
+          ->query(function (Builder $query, array $data): Builder {
+            return $query
+              ->when(
+                $data['created_from'],
+                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+              )
+              ->when(
+                $data['created_until'],
+                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+              );
+          })
+          ->indicateUsing(function (array $data): array {
+            $indicators = [];
+
+            if ($data['created_from'] ?? null) {
+              $indicators[] = Tables\Filters\Indicator::make('Created from ' . Carbon::parse($data['created_from'])->toFormattedDateString())
+                ->removeField('created_from');
+            }
+
+            if ($data['created_until'] ?? null) {
+              $indicators[] = Tables\Filters\Indicator::make('Created until ' . Carbon::parse($data['created_until'])->toFormattedDateString())
+                ->removeField('created_until');
+            }
+
+            return $indicators;
+          })->columnSpan(2)->columns(),
+
+      ], layout: Tables\Enums\FiltersLayout::AboveContent)->filtersFormColumns(3)
       ->actions([
         Tables\Actions\ActionGroup::make([
           Tables\Actions\ViewAction::make()
