@@ -70,13 +70,15 @@ class UserResource extends Resource
             Forms\Components\TextInput::make('email')
               ->label(trans('pages-users::page.field.email'))
               ->email()
+              ->unique(ignoreRecord: true)
               ->required()
               ->maxLength(50),
             Forms\Components\TextInput::make('phone')
               ->label(trans('pages-users::page.field.phone'))
               ->nullable()
+              ->unique(ignoreRecord: true)
               ->tel()
-              ->maxLength(14),
+              ->maxLength(25),
           ])->columns(3),
 
         Forms\Components\Grid::make(2)
@@ -99,6 +101,7 @@ class UserResource extends Resource
                     Collection::make(GeneralConstant::cases())->mapWithKeys(fn(GeneralConstant $enum) => [$enum->value => $enum->label()])
                   )
                   ->enum(GeneralConstant::class)
+                  ->required()
                   ->native(false),
                 Forms\Components\Select::make('roles')
                   ->label(trans('pages-users::page.field.roles'))
@@ -133,13 +136,35 @@ class UserResource extends Resource
           ->label(trans('pages-users::page.column.phone'))
           ->getStateUsing(fn(Model $record) => $record->phone ?: '-')
           ->searchable(),
+        Tables\Columns\TextColumn::make('roles.name')
+          ->label(trans('pages-users::page.field.roles'))
+          ->getStateUsing(
+            fn(Model $record) => UserRole::from($record->roles->implode('name'))->label()
+          )
+          ->badge()
+          ->colors(function (Model $record) {
+            $roleColorMap = [
+              UserRole::SuperAdmin->value => 'primary',
+              UserRole::SubjectRegisTeam->value => 'success',
+              UserRole::FinanceTeam->value => 'danger',
+              UserRole::StudentRegisTeam->value => 'warning',
+              UserRole::FilingTeam->value => 'secondary',
+            ];
+
+            return $record->roles->map(function ($role) use ($roleColorMap) {
+              return $roleColorMap[$role->name] ?? 'gray';
+            })->toArray();
+          }),
         Tables\Columns\TextColumn::make('email_verified_at')
           ->label(trans('pages-users::page.column.email_verified_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\IconColumn::make('status')
-          ->boolean(),
+          ->boolean()
+          ->trueIcon('heroicon-o-check-badge')
+          ->falseIcon('heroicon-o-x-mark')
+          ->getStateUsing(fn(Model $record) => $record->status->value == GeneralConstant::Active->value),
         Tables\Columns\TextColumn::make('created_at')
           ->label(trans('pages-users::page.column.created_at'))
           ->dateTime()
@@ -168,9 +193,12 @@ class UserResource extends Resource
             ),
           Tables\Actions\DeleteAction::make()
             ->iconSize('sm')
-            ->visible(
-              fn(Model $record) => $record->roles->implode('name') !== UserRole::SuperAdmin->value || !$record->status
-            ),
+            ->hidden(function (Model $record) {
+              $isSuperAdmin = $record->roles->contains('name', UserRole::SuperAdmin->value);
+              $isActive = $record->status->value !== GeneralConstant::InActive->value;
+
+              return $isSuperAdmin || ($isActive && !$isSuperAdmin);
+            }),
         ])
           ->button()
           ->size(ActionSize::Small)
