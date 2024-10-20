@@ -27,6 +27,16 @@ class VillageResource extends Resource
     return trans('pages-villages::page.nav.village.label');
   }
 
+  public static function getModelLabel(): string
+  {
+    return __('pages-villages::page.resource.label.village');
+  }
+
+  public static function getPluralModelLabel(): string
+  {
+    return __('pages-villages::page.resource.label.villages');
+  }
+
   public static function getNavigationBadge(): ?string
   {
     return static::getModel()::count();

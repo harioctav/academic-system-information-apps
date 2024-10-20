@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProvinceResource\Pages;
 use App\Filament\Resources\ProvinceResource\RelationManagers;
+use App\Helpers\Notification;
 use App\Models\Province;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -27,6 +28,16 @@ class ProvinceResource extends Resource
     return trans('pages-provinces::page.nav.province.label');
   }
 
+  public static function getModelLabel(): string
+  {
+    return __('pages-provinces::page.resource.label.province');
+  }
+
+  public static function getPluralModelLabel(): string
+  {
+    return __('pages-provinces::page.resource.label.provinces');
+  }
+
   public static function getNavigationBadge(): ?string
   {
     return static::getModel()::count();
@@ -41,14 +52,15 @@ class ProvinceResource extends Resource
   {
     return $form
       ->schema([
-        Forms\Components\Section::make('Province Data')
-          ->description('Fill the form to make new province')
+        Forms\Components\Section::make()
           ->schema([
             Forms\Components\TextInput::make('code')
+              ->label(__('pages-provinces::page.field.code'))
               ->required()
               ->numeric()
               ->maxLength(5),
             Forms\Components\TextInput::make('name')
+              ->label(__('pages-provinces::page.field.name'))
               ->required()
               ->maxLength(80),
           ])->columns(),
@@ -61,14 +73,18 @@ class ProvinceResource extends Resource
       ->defaultPaginationPageOption(5)
       ->columns([
         Tables\Columns\TextColumn::make('code')
+          ->label(__('pages-provinces::page.column.code'))
           ->searchable(),
         Tables\Columns\TextColumn::make('name')
+          ->label(__('pages-provinces::page.column.name'))
           ->searchable(),
         Tables\Columns\TextColumn::make('created_at')
+          ->label(__('pages-provinces::page.column.created_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\TextColumn::make('updated_at')
+          ->label(__('pages-provinces::page.column.updated_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
@@ -84,9 +100,21 @@ class ProvinceResource extends Resource
           Tables\Actions\EditAction::make()
             ->color('warning')
             ->icon('heroicon-m-pencil')
-            ->iconSize('sm'),
+            ->iconSize('sm')
+            ->successNotification(
+              Notification::successNotification(
+                title: __('notification.edit.title'),
+                body: __('notification.edit.body', ['label' => __('pages-provinces::page.nav.province.label')])
+              ),
+            ),
           Tables\Actions\DeleteAction::make()
-            ->iconSize('sm'),
+            ->iconSize('sm')
+            ->successNotification(
+              Notification::successNotification(
+                title: __('notification.delete.title'),
+                body: __('notification.delete.body', ['label' => __('pages-provinces::page.nav.province.label')])
+              ),
+            ),
         ])
           ->button()
           ->size('sm')

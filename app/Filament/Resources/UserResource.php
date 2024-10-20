@@ -29,6 +29,16 @@ class UserResource extends Resource
     return trans('pages-users::page.nav.user.label');
   }
 
+  public static function getModelLabel(): string
+  {
+    return __('pages-users::page.resource.label.user');
+  }
+
+  public static function getPluralModelLabel(): string
+  {
+    return __('pages-users::page.resource.label.users');
+  }
+
   public static function getNavigationBadge(): ?string
   {
     return static::getModel()::count();
@@ -99,9 +109,6 @@ class UserResource extends Resource
     return $table
       ->defaultPaginationPageOption(5)
       ->columns([
-        Tables\Columns\TextColumn::make('uuid')
-          ->label('UUID')
-          ->searchable(),
         Tables\Columns\TextColumn::make('name')
           ->searchable(),
         Tables\Columns\TextColumn::make('email')

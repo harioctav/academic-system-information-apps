@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Enums\RegencyType;
 use App\Filament\Resources\RegencyResource\Pages;
 use App\Filament\Resources\RegencyResource\RelationManagers;
+use App\Helpers\Notification;
+use App\Models\Province;
 use App\Models\Regency;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -30,6 +32,16 @@ class RegencyResource extends Resource
     return trans('pages-regencies::page.nav.regency.label');
   }
 
+  public static function getModelLabel(): string
+  {
+    return __('pages-regencies::page.resource.label.regency');
+  }
+
+  public static function getPluralModelLabel(): string
+  {
+    return __('pages-regencies::page.resource.label.regencies');
+  }
+
   public static function getNavigationBadge(): ?string
   {
     return static::getModel()::count();
@@ -46,25 +58,37 @@ class RegencyResource extends Resource
       ->schema([
         Forms\Components\Section::make()
           ->schema([
+            Forms\Components\TextInput::make('code')
+              ->label(
+                __('pages-regencies::page.field.code')
+              )
+              ->required()
+              ->maxLength(5),
+            Forms\Components\TextInput::make('name')
+              ->label(
+                __('pages-regencies::page.field.name')
+              )
+              ->required()
+              ->maxLength(80),
+          ])->columns(),
+        Forms\Components\Section::make()
+          ->schema([
             Forms\Components\Select::make('province_id')
               ->relationship(name: 'province', titleAttribute: 'name')
+              ->label(
+                __('pages-regencies::page.field.province')
+              )
               ->searchable()
               ->preload()
               ->required(),
             Forms\Components\Select::make('type')
               ->options(RegencyType::toSelectArray())
+              ->label(
+                __('pages-regencies::page.field.type')
+              )
               ->preload()
               ->required()
               ->native(false),
-          ])->columns(),
-        Forms\Components\Section::make()
-          ->schema([
-            Forms\Components\TextInput::make('code')
-              ->required()
-              ->maxLength(5),
-            Forms\Components\TextInput::make('name')
-              ->required()
-              ->maxLength(80),
           ])->columns(),
       ]);
   }
@@ -75,21 +99,28 @@ class RegencyResource extends Resource
       ->defaultPaginationPageOption(5)
       ->columns([
         Tables\Columns\TextColumn::make('province.name')
+          ->label(__('pages-regencies::page.column.province'))
           ->numeric()
           ->sortable(),
         Tables\Columns\TextColumn::make('code')
+          ->label(__('pages-regencies::page.column.code'))
           ->searchable(),
         Tables\Columns\TextColumn::make('full_code')
+          ->label(__('pages-regencies::page.column.full_code'))
           ->searchable(),
         Tables\Columns\TextColumn::make('type')
+          ->label(__('pages-regencies::page.column.type'))
           ->searchable(),
         Tables\Columns\TextColumn::make('name')
+          ->label(__('pages-regencies::page.column.name'))
           ->searchable(),
         Tables\Columns\TextColumn::make('created_at')
+          ->label(__('pages-regencies::page.column.created_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\TextColumn::make('updated_at')
+          ->label(__('pages-regencies::page.column.updated_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
@@ -97,15 +128,23 @@ class RegencyResource extends Resource
       ->filters([
         Tables\Filters\SelectFilter::make('Province')
           ->relationship('province', 'name')
-          ->label('Filter by Province')
+          ->label(
+            __('pages-regencies::page.column.filter.province')
+          )
           ->searchable()
           ->preload()
           ->indicator('Province'),
 
         Tables\Filters\Filter::make('created_at')
           ->form([
-            FilterDatePicker::make('created_from'),
-            FilterDatePicker::make('created_until'),
+            FilterDatePicker::make('created_from')
+              ->label(
+                __('pages-regencies::page.column.filter.created_from')
+              ),
+            FilterDatePicker::make('created_until')
+              ->label(
+                __('pages-regencies::page.column.filter.created_until')
+              ),
           ])
           ->query(function (Builder $query, array $data): Builder {
             return $query
@@ -143,9 +182,29 @@ class RegencyResource extends Resource
           Tables\Actions\EditAction::make()
             ->color('warning')
             ->icon('heroicon-m-pencil')
-            ->iconSize('sm'),
+            ->iconSize('sm')
+            ->mutateFormDataUsing(function (array $data): array {
+              if (isset($data['province_id'])) {
+                $province = Province::findOrFail($data['province_id']);
+                $data['full_code'] = $province->code . $data['code'];
+              }
+
+              return $data;
+            })
+            ->successNotification(
+              Notification::successNotification(
+                title: __('notification.edit.title'),
+                body: __('notification.edit.body', ['label' => __('pages-regencies::page.nav.regency.label')])
+              ),
+            ),
           Tables\Actions\DeleteAction::make()
-            ->iconSize('sm'),
+            ->iconSize('sm')
+            ->successNotification(
+              Notification::successNotification(
+                title: __('notification.delete.title'),
+                body: __('notification.delete.body', ['label' => __('pages-regencies::page.nav.regency.label')])
+              ),
+            ),
         ])
           ->button()
           ->size('sm')
@@ -169,8 +228,6 @@ class RegencyResource extends Resource
   {
     return [
       'index' => Pages\ListRegencies::route('/'),
-      'create' => Pages\CreateRegency::route('/create'),
-      'edit' => Pages\EditRegency::route('/{record}/edit'),
     ];
   }
 }

@@ -5,7 +5,7 @@ export default defineConfig({
     plugins: [
         laravel({
             input: ["resources/css/app.css", "resources/js/app.js"],
-            refresh: [...refreshPaths, "app/Livewire/**"],
+            refresh: [...refreshPaths, "app/Livewire/**", "app/Filament/**"],
         }),
     ],
 });
