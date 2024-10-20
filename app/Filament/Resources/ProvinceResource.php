@@ -18,6 +18,11 @@ class ProvinceResource extends Resource
 {
   protected static ?string $model = Province::class;
 
+  public static function getNavigationGroup(): ?string
+  {
+    return trans('navigations.regions.group');
+  }
+
   public static function getNavigationIcon(): string
   {
     return trans('pages-provinces::page.nav.province.icon');

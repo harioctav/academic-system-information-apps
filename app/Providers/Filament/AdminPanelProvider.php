@@ -61,31 +61,12 @@ class AdminPanelProvider extends PanelProvider
         Widgets\AccountWidget::class,
         Widgets\FilamentInfoWidget::class,
       ])
+      ->navigationGroups([
+        trans('navigations.settings.group'),
+        trans('navigations.regions.group'),
+      ])
       // ->topNavigation()
       // ->sidebarFullyCollapsibleOnDesktop()
-      ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
-        return $builder
-          ->items([
-            NavigationItem::make('Dashboard')
-              ->icon('heroicon-o-home')
-              ->isActiveWhen(fn(): bool => request()->routeIs('filament.admin.pages.dashboard'))
-              ->url(fn(): string => Dashboard::getUrl()),
-          ])
-          ->groups([
-            NavigationGroup::make(__('pages-users::page.nav.group'))
-              ->items([
-                ...UserResource::getNavigationItems(),
-                ...RoleResource::getNavigationItems(),
-              ]),
-            NavigationGroup::make(__('pages-provinces::page.nav.group'))
-              ->items([
-                ...ProvinceResource::getNavigationItems(),
-                ...RegencyResource::getNavigationItems(),
-                ...DistrictResource::getNavigationItems(),
-                ...VillageResource::getNavigationItems(),
-              ]),
-          ]);
-      })
       ->userMenuItems([
         'profile' => MenuItem::make()->label('Edit profile'),
       ])

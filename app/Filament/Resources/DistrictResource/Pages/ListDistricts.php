@@ -7,6 +7,7 @@ use App\Helpers\Notification;
 use App\Models\Regency;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Enums\ActionSize;
 
 class ListDistricts extends ListRecords
 {
@@ -30,6 +31,7 @@ class ListDistricts extends ListRecords
             body: trans('notification.create.body', ['label' => trans('pages-districts::page.resource.label.district')])
           ),
         )
+        ->size(ActionSize::Small)
         ->icon(trans('button.create.icon'))
         ->iconSize('sm')
         ->label(trans('button.create', ['label' => trans('pages-districts::page.resource.label.district')])),

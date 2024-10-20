@@ -21,6 +21,11 @@ class VillageResource extends Resource
 {
   protected static ?string $model = Village::class;
 
+  public static function getNavigationGroup(): ?string
+  {
+    return trans('navigations.regions.group');
+  }
+
   public static function getNavigationIcon(): string
   {
     return trans('pages-villages::page.nav.village.icon');

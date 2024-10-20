@@ -7,6 +7,7 @@ use App\Helpers\Notification;
 use App\Models\District;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Enums\ActionSize;
 
 class ListVillages extends ListRecords
 {
@@ -31,6 +32,7 @@ class ListVillages extends ListRecords
             body: trans('notification.create.body', ['label' => trans('pages-villages::page.resource.label.village')])
           ),
         )
+        ->size(ActionSize::Small)
         ->icon(trans('button.create.icon'))
         ->iconSize('sm')
         ->label(trans('button.create', ['label' => trans('pages-villages::page.resource.label.village')])),

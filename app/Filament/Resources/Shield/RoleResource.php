@@ -87,6 +87,8 @@ class RoleResource extends Resource implements HasShieldPermissions
   {
     return $table
       ->defaultPaginationPageOption(5)
+      ->recordAction(null)
+      ->recordUrl(null)
       ->columns([
         Tables\Columns\TextColumn::make('name')
           ->badge()
@@ -111,6 +113,9 @@ class RoleResource extends Resource implements HasShieldPermissions
       ])
       ->actions([
         Tables\Actions\ActionGroup::make([
+          Tables\Actions\ViewAction::make()
+            ->iconSize('sm')
+            ->color('info'),
           Tables\Actions\EditAction::make()
             ->color('warning')
             ->icon('heroicon-m-pencil')
@@ -130,7 +135,10 @@ class RoleResource extends Resource implements HasShieldPermissions
       ])
       ->bulkActions([
         Tables\Actions\DeleteBulkAction::make(),
-      ]);
+      ])
+      ->checkIfRecordIsSelectableUsing(
+        fn(Model $record): bool => $record->name !== UserRole::SuperAdmin->value
+      );
   }
 
   public static function getRelations(): array
@@ -145,7 +153,7 @@ class RoleResource extends Resource implements HasShieldPermissions
     return [
       'index' => Pages\ListRoles::route('/'),
       // 'create' => Pages\CreateRole::route('/create'),
-      'view' => Pages\ViewRole::route('/{record}'),
+      // 'view' => Pages\ViewRole::route('/{record}'),
       'edit' => Pages\EditRole::route('/{record}/edit'),
     ];
   }
@@ -178,7 +186,7 @@ class RoleResource extends Resource implements HasShieldPermissions
   public static function getNavigationGroup(): ?string
   {
     return Utils::isResourceNavigationGroupEnabled()
-      ? __('filament-shield::filament-shield.nav.group')
+      ? trans('navigations.settings.group')
       : '';
   }
 

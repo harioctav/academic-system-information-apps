@@ -6,6 +6,7 @@ use App\Filament\Resources\ProvinceResource;
 use App\Helpers\Notification;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Enums\ActionSize;
 
 class ListProvinces extends ListRecords
 {
@@ -22,6 +23,7 @@ class ListProvinces extends ListRecords
           ),
         )
         ->icon(trans('button.create.icon'))
+        ->size(ActionSize::Small)
         ->iconSize('sm')
         ->label(trans('button.create', ['label' => trans('pages-provinces::page.resource.label.province')])),
     ];

@@ -22,6 +22,11 @@ class RegencyResource extends Resource
 {
   protected static ?string $model = Regency::class;
 
+  public static function getNavigationGroup(): ?string
+  {
+    return trans('navigations.regions.group');
+  }
+
   public static function getNavigationIcon(): string
   {
     return trans('pages-regencies::page.nav.regency.icon');

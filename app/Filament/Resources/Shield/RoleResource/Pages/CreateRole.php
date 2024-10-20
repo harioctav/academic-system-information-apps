@@ -6,6 +6,7 @@ use App\Filament\Resources\Shield\RoleResource;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Enums\ActionSize;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -22,6 +23,7 @@ class CreateRole extends CreateRecord
         ->label(trans('button.back'))
         ->url(RoleResource::getUrl()) // or you can use url(static::getResource()::getUrl())
         ->button()
+        ->size(ActionSize::Small)
         ->icon(trans('button.back.icon'))
         ->iconSize('sm')
         ->color('secondary'),

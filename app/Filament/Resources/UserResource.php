@@ -3,21 +3,29 @@
 namespace App\Filament\Resources;
 
 use App\Enums\GeneralConstant;
+use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\ActionSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
 
 class UserResource extends Resource
 {
   protected static ?string $model = User::class;
+
+  public static function getNavigationGroup(): ?string
+  {
+    return trans('navigations.settings.group');
+  }
 
   public static function getNavigationIcon(): string
   {
@@ -57,20 +65,17 @@ class UserResource extends Resource
           ->schema([
             Forms\Components\TextInput::make('name')
               ->required()
-              ->label('Nama Pengguna')
-              ->placeholder('Masukkan Nama Pengguna')
+              ->label(trans('pages-users::page.field.name'))
               ->maxLength(50),
             Forms\Components\TextInput::make('email')
+              ->label(trans('pages-users::page.field.email'))
               ->email()
               ->required()
-              ->label('Email')
-              ->placeholder('Masukkan Email')
               ->maxLength(50),
             Forms\Components\TextInput::make('phone')
+              ->label(trans('pages-users::page.field.phone'))
               ->nullable()
               ->tel()
-              ->label('Telepon')
-              ->placeholder('Masukkan No. Telepon')
               ->maxLength(14),
           ])->columns(3),
 
@@ -79,6 +84,7 @@ class UserResource extends Resource
             Forms\Components\Section::make()
               ->schema([
                 Forms\Components\FileUpload::make('avatar')
+                  ->label(trans('pages-users::page.field.avatar'))
                   ->avatar()
                   ->disk('public')
                   ->directory('images/users')
@@ -95,7 +101,11 @@ class UserResource extends Resource
                   ->enum(GeneralConstant::class)
                   ->native(false),
                 Forms\Components\Select::make('roles')
+                  ->label(trans('pages-users::page.field.roles'))
                   ->relationship(name: 'roles', titleAttribute: 'name')
+                  ->getOptionLabelFromRecordUsing(
+                    fn(Model $record) => UserRole::from($record->name)->label()
+                  )
                   ->searchable()
                   ->preload()
                   ->required(),
@@ -108,23 +118,35 @@ class UserResource extends Resource
   {
     return $table
       ->defaultPaginationPageOption(5)
+      ->recordUrl(null)
+      ->checkIfRecordIsSelectableUsing(
+        fn(Model $record): bool => $record->roles->implode('name') !== UserRole::SuperAdmin->value
+      )
       ->columns([
         Tables\Columns\TextColumn::make('name')
+          ->label(trans('pages-users::page.column.name'))
           ->searchable(),
         Tables\Columns\TextColumn::make('email')
+          ->label(trans('pages-users::page.column.email'))
           ->searchable(),
         Tables\Columns\TextColumn::make('phone')
+          ->label(trans('pages-users::page.column.phone'))
+          ->getStateUsing(fn(Model $record) => $record->phone ?: '-')
           ->searchable(),
         Tables\Columns\TextColumn::make('email_verified_at')
+          ->label(trans('pages-users::page.column.email_verified_at'))
           ->dateTime()
-          ->sortable(),
+          ->sortable()
+          ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\IconColumn::make('status')
           ->boolean(),
         Tables\Columns\TextColumn::make('created_at')
+          ->label(trans('pages-users::page.column.created_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\TextColumn::make('updated_at')
+          ->label(trans('pages-users::page.column.updated_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
@@ -133,7 +155,26 @@ class UserResource extends Resource
         //
       ])
       ->actions([
-        Tables\Actions\EditAction::make(),
+        Tables\Actions\ActionGroup::make([
+          Tables\Actions\ViewAction::make()
+            ->iconSize('sm')
+            ->color('info'),
+          Tables\Actions\EditAction::make()
+            ->color('warning')
+            ->icon('heroicon-m-pencil')
+            ->iconSize('sm')
+            ->visible(
+              fn(Model $record) => $record->roles->implode('name') !== UserRole::SuperAdmin->value
+            ),
+          Tables\Actions\DeleteAction::make()
+            ->iconSize('sm')
+            ->visible(
+              fn(Model $record) => $record->roles->implode('name') !== UserRole::SuperAdmin->value || !$record->status
+            ),
+        ])
+          ->button()
+          ->size(ActionSize::Small)
+          ->icon('heroicon-m-ellipsis-vertical'),
       ])
       ->bulkActions([
         Tables\Actions\BulkActionGroup::make([

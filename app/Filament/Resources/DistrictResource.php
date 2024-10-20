@@ -13,11 +13,17 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DistrictResource extends Resource
 {
   protected static ?string $model = District::class;
+
+  public static function getNavigationGroup(): ?string
+  {
+    return trans('navigations.regions.group');
+  }
 
   public static function getNavigationIcon(): string
   {
@@ -61,7 +67,7 @@ class DistrictResource extends Resource
           ->label(trans('pages-districts::page.field.regency'))
           ->searchable()
           ->getOptionLabelFromRecordUsing(
-            fn(Regency $record) => "{$record->type} {$record->name}"
+            fn(Model $record) => "{$record->type} {$record->name}"
           )
           ->preload()
           ->required(),
