@@ -8,20 +8,20 @@ enum UserRole: string
 {
   use EnumsToArray;
 
-  case ADMIN = 'super_admin';
-  case REGIS_TEAM = 'registration_team';
-  case FINANCE_TEAM = 'finance_team';
-  case PPDB_TEAM = 'ppdb_team';
-  case FILING_TEAM = 'filing_team';
+  case SuperAdmin = 'super_admin';
+  case SubjectRegisTeam = 'subject_regis_team';
+  case FinanceTeam = 'finance_team';
+  case StudentRegisTeam = 'student_regis_team';
+  case FilingTeam = 'filing_team';
 
   public function label(): string
   {
     return match ($this) {
-      self::ADMIN => 'Super Admin',
-      self::REGIS_TEAM => 'Tim Regis Matakuliah',
-      self::FINANCE_TEAM => 'Tim Keuangan',
-      self::PPDB_TEAM => 'Tim PPDB Maba',
-      self::FILING_TEAM => 'Tim Pemberkasan',
+      self::SuperAdmin => 'Super Admin',
+      self::SubjectRegisTeam => 'Tim Regis Matakuliah',
+      self::FinanceTeam => 'Tim Keuangan',
+      self::StudentRegisTeam => 'Tim Pendaftaran Mahasiswa Baru',
+      self::FilingTeam => 'Tim Pemberkasan',
     };
   }
 }

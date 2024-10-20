@@ -10,6 +10,7 @@ use App\Models\Village;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\ActionSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -183,7 +184,7 @@ class VillageResource extends Resource
             ),
         ])
           ->button()
-          ->size('sm')
+          ->size(ActionSize::Small)
           ->icon('heroicon-m-ellipsis-vertical'),
       ])
       ->bulkActions([

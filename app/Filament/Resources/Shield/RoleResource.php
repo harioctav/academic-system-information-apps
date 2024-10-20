@@ -8,11 +8,13 @@ use BezhanSalleh\FilamentShield\Facades\FilamentShield;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Forms\ShieldSelectAllToggle;
 use App\Filament\Resources\Shield\RoleResource\Pages;
+use App\Models\Role;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Forms;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\ActionSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +24,8 @@ use Illuminate\Support\Str;
 
 class RoleResource extends Resource implements HasShieldPermissions
 {
+  protected static ?string $model = Role::class;
+
   protected static ?string $recordTitleAttribute = 'name';
 
   public static function getPermissionPrefixes(): array
@@ -107,8 +111,23 @@ class RoleResource extends Resource implements HasShieldPermissions
         //
       ])
       ->actions([
-        Tables\Actions\EditAction::make(),
-        Tables\Actions\DeleteAction::make(),
+        Tables\Actions\ActionGroup::make([
+          Tables\Actions\EditAction::make()
+            ->color('warning')
+            ->icon('heroicon-m-pencil')
+            ->iconSize('sm')
+            ->hidden(
+              fn(Model $record) => $record->name === UserRole::SuperAdmin->value
+            ),
+          Tables\Actions\DeleteAction::make()
+            ->iconSize('sm')
+            ->hidden(
+              fn(Model $record) => $record->name === UserRole::SuperAdmin->value
+            ),
+        ])
+          ->button()
+          ->size(ActionSize::Small)
+          ->icon('heroicon-m-ellipsis-vertical'),
       ])
       ->bulkActions([
         Tables\Actions\DeleteBulkAction::make(),
