@@ -1,0 +1,27 @@
+[
+    {
+        "name": "super_admin",
+        "guard_name": "web",
+        "permissions": []
+    },
+    {
+        "name": "subject_regis_team",
+        "guard_name": "web",
+        "permissions": []
+    },
+    {
+        "name": "finance_team",
+        "guard_name": "web",
+        "permissions": []
+    },
+    {
+        "name": "student_regis_team",
+        "guard_name": "web",
+        "permissions": []
+    },
+    {
+        "name": "filing_team",
+        "guard_name": "web",
+        "permissions": []
+    }
+]

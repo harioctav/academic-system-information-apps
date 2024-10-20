@@ -10,13 +10,13 @@ class ListRoles extends ListRecords
 {
   protected static string $resource = RoleResource::class;
 
-  protected function getActions(): array
-  {
-    return [
-      Actions\CreateAction::make()
-        ->icon(trans('button.create.icon'))
-        ->iconSize('sm')
-        ->label(trans('button.create', ['label' => trans('filament-shield::filament-shield.resource.label.role')])),
-    ];
-  }
+  // protected function getActions(): array
+  // {
+  //   return [
+  //     Actions\CreateAction::make()
+  //       ->icon(trans('button.create.icon'))
+  //       ->iconSize('sm')
+  //       ->label(trans('button.create', ['label' => trans('filament-shield::filament-shield.resource.label.role')])),
+  //   ];
+  // }
 }

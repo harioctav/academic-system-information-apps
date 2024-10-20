@@ -26,8 +26,6 @@ class RoleResource extends Resource implements HasShieldPermissions
 {
   protected static ?string $model = Role::class;
 
-  protected static ?string $recordTitleAttribute = 'name';
-
   public static function getPermissionPrefixes(): array
   {
     return [
@@ -88,6 +86,7 @@ class RoleResource extends Resource implements HasShieldPermissions
   public static function table(Table $table): Table
   {
     return $table
+      ->defaultPaginationPageOption(5)
       ->columns([
         Tables\Columns\TextColumn::make('name')
           ->badge()
@@ -145,7 +144,7 @@ class RoleResource extends Resource implements HasShieldPermissions
   {
     return [
       'index' => Pages\ListRoles::route('/'),
-      'create' => Pages\CreateRole::route('/create'),
+      // 'create' => Pages\CreateRole::route('/create'),
       'view' => Pages\ViewRole::route('/{record}'),
       'edit' => Pages\EditRole::route('/{record}/edit'),
     ];

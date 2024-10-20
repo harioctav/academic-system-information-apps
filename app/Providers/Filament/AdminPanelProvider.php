@@ -46,7 +46,9 @@ class AdminPanelProvider extends PanelProvider
         'info' => Color::Sky,
         'success' => Color::Emerald,
         'warning' => Color::Orange,
+        'secondary' => '#2C3E50'
       ])
+      ->font('Poppins')
       ->brandLogo(fn() => view('components.filament.logo'))
       ->favicon(asset('assets/images/logos/logo.png'))
       ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

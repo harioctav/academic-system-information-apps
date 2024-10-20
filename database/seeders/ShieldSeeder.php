@@ -12,7 +12,71 @@ class ShieldSeeder extends Seeder
   {
     app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-    $rolesWithPermissions = '[{"name":"super_admin","guard_name":"web","permissions":["view_district","view_any_district","create_district","update_district","delete_district","delete_any_district","view_province","view_any_province","create_province","update_province","delete_province","delete_any_province","view_regency","view_any_regency","create_regency","update_regency","delete_regency","delete_any_regency","view_shield::role","view_any_shield::role","create_shield::role","update_shield::role","delete_shield::role","delete_any_shield::role","view_user","view_any_user","create_user","update_user","delete_user","delete_any_user","view_village","view_any_village","create_village","update_village","delete_village","delete_any_village"]}]';
+    $rolesWithPermissions = '
+    [
+      {
+        "name": "super_admin",
+        "guard_name": "web",
+        "permissions": [
+          "view_district",
+          "view_any_district",
+          "create_district",
+          "update_district",
+          "delete_district",
+          "delete_any_district",
+          "view_province",
+          "view_any_province",
+          "create_province",
+          "update_province",
+          "delete_province",
+          "delete_any_province",
+          "view_regency",
+          "view_any_regency",
+          "create_regency",
+          "update_regency",
+          "delete_regency",
+          "delete_any_regency",
+          "view_shield::role",
+          "view_any_shield::role",
+          "create_shield::role",
+          "update_shield::role",
+          "delete_shield::role",
+          "delete_any_shield::role",
+          "view_user",
+          "view_any_user",
+          "create_user",
+          "update_user",
+          "delete_user",
+          "delete_any_user",
+          "view_village",
+          "view_any_village",
+          "create_village",
+          "update_village",
+          "delete_village",
+          "delete_any_village"
+        ]
+      },
+      {
+        "name": "subject_regis_team",
+        "guard_name": "web",
+        "permissions": []
+      },
+      {
+        "name": "finance_team",
+        "guard_name": "web",
+        "permissions": []
+      },
+      {
+        "name": "student_regis_team",
+        "guard_name": "web",
+        "permissions": []
+      },
+      {
+        "name": "filing_team",
+        "guard_name": "web",
+        "permissions": []
+      }
+    ]';
     $directPermissions = '[]';
 
     static::makeRolesWithPermissions($rolesWithPermissions);
