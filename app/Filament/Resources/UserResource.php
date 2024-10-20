@@ -9,6 +9,9 @@ use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\ActionSize;
 use Filament\Tables;
@@ -17,6 +20,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\Section;
 
 class UserResource extends Resource
 {
@@ -88,6 +93,7 @@ class UserResource extends Resource
                 Forms\Components\FileUpload::make('avatar')
                   ->label(trans('pages-users::page.field.avatar'))
                   ->avatar()
+                  ->image()
                   ->disk('public')
                   ->directory('images/users')
                   ->visibility('public')
@@ -126,6 +132,13 @@ class UserResource extends Resource
         fn(Model $record): bool => $record->roles->implode('name') !== UserRole::SuperAdmin->value
       )
       ->columns([
+        Tables\Columns\ImageColumn::make('avatar')
+          ->label(trans('pages-users::page.field.avatar'))
+          ->circular()
+          ->alignCenter()
+          ->getStateUsing(
+            fn(Model $record) => $record->getUserAvatar()
+          ),
         Tables\Columns\TextColumn::make('name')
           ->label(trans('pages-users::page.column.name'))
           ->searchable(),
@@ -177,7 +190,23 @@ class UserResource extends Resource
           ->toggleable(isToggledHiddenByDefault: true),
       ])
       ->filters([
-        //
+        Tables\Filters\SelectFilter::make(trans('filament-shield::filament-shield.resource.label.role'))
+          ->relationship('roles', 'name')
+          ->searchable()
+          ->preload()
+          ->getOptionLabelFromRecordUsing(
+            fn(Model $record) => UserRole::from($record->name)->label()
+          )
+          ->label(trans('pages-users::page.column.filter.role'))
+          ->indicator(trans('filament-shield::filament-shield.resource.label.role')),
+
+        Tables\Filters\SelectFilter::make('status')
+          ->options(
+            Collection::make(GeneralConstant::cases())->mapWithKeys(fn(GeneralConstant $enum) => [$enum->value => $enum->label()])
+          )
+          ->label(trans('pages-users::page.column.filter.status'))
+          ->indicator('Status')
+          ->native(false),
       ])
       ->actions([
         Tables\Actions\ActionGroup::make([
@@ -208,6 +237,71 @@ class UserResource extends Resource
         Tables\Actions\BulkActionGroup::make([
           Tables\Actions\DeleteBulkAction::make(),
         ]),
+      ]);
+  }
+
+  public static function infolist(Infolist $infolist): Infolist
+  {
+    return $infolist
+      ->schema([
+        Section::make(trans('pages-users::page.infolist.title'))
+          ->description(trans('pages-users::page.infolist.description', ['name' => $infolist->getRecord()->name]))
+          ->icon('heroicon-o-exclamation-circle')
+          ->iconColor('info')
+          ->schema([
+            Grid::make(2)
+              ->schema([
+                Section::make()
+                  ->schema([
+                    ImageEntry::make('avatar')
+                      ->label(trans('pages-users::page.field.avatar'))
+                      ->circular()
+                      ->label('Avatar')
+                      ->extraAttributes(['class' => 'w-32 h-32'])
+                      ->extraAttributes(['class' => 'flex items-center justify-center'])
+                      ->getStateUsing(
+                        fn(Model $record) => $record->getUserAvatar()
+                      ),
+                    TextEntry::make('roles.name')
+                      ->label(trans('pages-users::page.field.roles'))
+                      ->getStateUsing(
+                        fn(Model $record) => UserRole::from($record->roles->implode('name'))->label()
+                      )
+                      ->badge()
+                      ->colors(function (Model $record) {
+                        $roleColorMap = [
+                          UserRole::SuperAdmin->value => 'primary',
+                          UserRole::SubjectRegisTeam->value => 'success',
+                          UserRole::FinanceTeam->value => 'danger',
+                          UserRole::StudentRegisTeam->value => 'warning',
+                          UserRole::FilingTeam->value => 'secondary',
+                        ];
+
+                        return $record->roles->map(function ($role) use ($roleColorMap) {
+                          return $roleColorMap[$role->name] ?? 'gray';
+                        })->toArray();
+                      }),
+                  ])->columnSpan(1),
+                Section::make()
+                  ->schema([
+                    TextEntry::make('name')
+                      ->label(trans('pages-users::page.field.name')),
+                    TextEntry::make('email')
+                      ->label(trans('pages-users::page.field.email')),
+                    TextEntry::make('phone')
+                      ->label(trans('pages-users::page.field.phone'))
+                      ->getStateUsing(fn(Model $record) => $record->phone ?: '-'),
+                    TextEntry::make('status')
+                      ->badge()
+                      ->getStateUsing(
+                        fn(Model $record) => $record->status->label()
+                      )
+                      ->color(
+                        fn(Model $record) => $record->status->value == GeneralConstant::Active->value ? 'success' : 'danger'
+                      ),
+                  ])->columnSpan(1),
+              ]),
+          ]),
       ]);
   }
 

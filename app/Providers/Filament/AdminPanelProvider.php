@@ -7,6 +7,7 @@ use App\Filament\Resources\ProvinceResource;
 use App\Filament\Resources\RegencyResource;
 use App\Filament\Resources\Shield\RoleResource;
 use App\Filament\Resources\UserResource;
+use App\Filament\Resources\UserResource\Auth\EditProfile;
 use App\Filament\Resources\VillageResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -38,7 +39,7 @@ class AdminPanelProvider extends PanelProvider
       ->id('admin')
       ->path('admin')
       ->login()
-      ->profile()
+      ->profile(EditProfile::class)
       ->colors([
         'primary' => '#3498DB',
         'danger' => Color::Rose,

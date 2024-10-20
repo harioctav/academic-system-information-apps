@@ -5,6 +5,10 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\GeneralConstant;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,10 +16,15 @@ use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
 use Ramsey\Uuid\Uuid as Generator;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
 {
   /** @use HasFactory<\Database\Factories\UserFactory> */
   use HasFactory, Notifiable, HasRoles;
+
+  public function canAccessPanel(Panel $panel): bool
+  {
+    return $this->status->value === GeneralConstant::Active->value;
+  }
 
   protected static function boot()
   {
@@ -79,5 +88,42 @@ class User extends Authenticatable
   public function getRouteKeyName(): string
   {
     return 'uuid';
+  }
+
+  protected ?string $cachedAvatarUrl = null;
+
+  /**
+   * Get Filament avatar URL.
+   */
+  public function getFilamentAvatarUrl(): ?string
+  {
+    return $this->getAvatarUrl();
+  }
+
+  public function getFilamentName(): string
+  {
+    return "{$this->name}";
+  }
+
+  /**
+   * Get user avatar URL.
+   */
+  public function getUserAvatar(): string
+  {
+    return $this->getAvatarUrl();
+  }
+
+  /**
+   * Get avatar URL (internal method).
+   */
+  protected function getAvatarUrl(): string
+  {
+    if ($this->cachedAvatarUrl === null) {
+      $this->cachedAvatarUrl = $this->avatar
+        ? Storage::url($this->avatar)
+        : asset('assets/images/placeholders/default-avatar.png');
+    }
+
+    return $this->cachedAvatarUrl;
   }
 }

@@ -8,6 +8,12 @@ return [
   'resource.label.user' => 'User',
   'resource.label.users' => 'Users',
 
+  'infolist.title' => 'User',
+  'infolist.description' => 'User data details for :name',
+
+  'profile.title' => 'Update Your Profile',
+  'profile.description' => 'Update User data details for :name',
+
   // Table Column
   'column.name' => 'Name',
   'column.email' => 'Email',
