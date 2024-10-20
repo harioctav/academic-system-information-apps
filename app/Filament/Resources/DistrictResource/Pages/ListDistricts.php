@@ -26,10 +26,13 @@ class ListDistricts extends ListRecords
         })
         ->successNotification(
           Notification::successNotification(
-            title: __('notification.create.title'),
-            body: __('notification.create.body', ['label' => __('pages-districts::page.nav.district.label')])
+            title: trans('notification.create.title'),
+            body: trans('notification.create.body', ['label' => trans('pages-districts::page.resource.label.district')])
           ),
-        ),
+        )
+        ->icon(trans('button.create.icon'))
+        ->iconSize('sm')
+        ->label(trans('button.create', ['label' => trans('pages-districts::page.resource.label.district')])),
     ];
   }
 }

@@ -19,7 +19,7 @@ class VillageResource extends Resource
 
   public static function getNavigationIcon(): string
   {
-    return __('pages-villages::page.nav.village.icon');
+    return trans('pages-villages::page.nav.village.icon');
   }
 
   public static function getNavigationLabel(): string
@@ -29,12 +29,12 @@ class VillageResource extends Resource
 
   public static function getModelLabel(): string
   {
-    return __('pages-villages::page.resource.label.village');
+    return trans('pages-villages::page.resource.label.village');
   }
 
   public static function getPluralModelLabel(): string
   {
-    return __('pages-villages::page.resource.label.villages');
+    return trans('pages-villages::page.resource.label.villages');
   }
 
   public static function getNavigationBadge(): ?string

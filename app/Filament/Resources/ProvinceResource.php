@@ -20,7 +20,7 @@ class ProvinceResource extends Resource
 
   public static function getNavigationIcon(): string
   {
-    return __('pages-provinces::page.nav.province.icon');
+    return trans('pages-provinces::page.nav.province.icon');
   }
 
   public static function getNavigationLabel(): string
@@ -30,12 +30,12 @@ class ProvinceResource extends Resource
 
   public static function getModelLabel(): string
   {
-    return __('pages-provinces::page.resource.label.province');
+    return trans('pages-provinces::page.resource.label.province');
   }
 
   public static function getPluralModelLabel(): string
   {
-    return __('pages-provinces::page.resource.label.provinces');
+    return trans('pages-provinces::page.resource.label.provinces');
   }
 
   public static function getNavigationBadge(): ?string
@@ -55,12 +55,12 @@ class ProvinceResource extends Resource
         Forms\Components\Section::make()
           ->schema([
             Forms\Components\TextInput::make('code')
-              ->label(__('pages-provinces::page.field.code'))
+              ->label(trans('pages-provinces::page.field.code'))
               ->required()
               ->numeric()
               ->maxLength(5),
             Forms\Components\TextInput::make('name')
-              ->label(__('pages-provinces::page.field.name'))
+              ->label(trans('pages-provinces::page.field.name'))
               ->required()
               ->maxLength(80),
           ])->columns(),
@@ -73,18 +73,18 @@ class ProvinceResource extends Resource
       ->defaultPaginationPageOption(5)
       ->columns([
         Tables\Columns\TextColumn::make('code')
-          ->label(__('pages-provinces::page.column.code'))
+          ->label(trans('pages-provinces::page.column.code'))
           ->searchable(),
         Tables\Columns\TextColumn::make('name')
-          ->label(__('pages-provinces::page.column.name'))
+          ->label(trans('pages-provinces::page.column.name'))
           ->searchable(),
         Tables\Columns\TextColumn::make('created_at')
-          ->label(__('pages-provinces::page.column.created_at'))
+          ->label(trans('pages-provinces::page.column.created_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\TextColumn::make('updated_at')
-          ->label(__('pages-provinces::page.column.updated_at'))
+          ->label(trans('pages-provinces::page.column.updated_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
@@ -103,16 +103,16 @@ class ProvinceResource extends Resource
             ->iconSize('sm')
             ->successNotification(
               Notification::successNotification(
-                title: __('notification.edit.title'),
-                body: __('notification.edit.body', ['label' => __('pages-provinces::page.nav.province.label')])
+                title: trans('notification.edit.title'),
+                body: trans('notification.edit.body', ['label' => trans('pages-provinces::page.resource.label.province')])
               ),
             ),
           Tables\Actions\DeleteAction::make()
             ->iconSize('sm')
             ->successNotification(
               Notification::successNotification(
-                title: __('notification.delete.title'),
-                body: __('notification.delete.body', ['label' => __('pages-provinces::page.nav.province.label')])
+                title: trans('notification.delete.title'),
+                body: trans('notification.delete.body', ['label' => trans('pages-provinces::page.resource.label.province')])
               ),
             ),
         ])

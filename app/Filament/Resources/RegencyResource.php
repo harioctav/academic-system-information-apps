@@ -24,7 +24,7 @@ class RegencyResource extends Resource
 
   public static function getNavigationIcon(): string
   {
-    return __('pages-regencies::page.nav.regency.icon');
+    return trans('pages-regencies::page.nav.regency.icon');
   }
 
   public static function getNavigationLabel(): string
@@ -34,12 +34,12 @@ class RegencyResource extends Resource
 
   public static function getModelLabel(): string
   {
-    return __('pages-regencies::page.resource.label.regency');
+    return trans('pages-regencies::page.resource.label.regency');
   }
 
   public static function getPluralModelLabel(): string
   {
-    return __('pages-regencies::page.resource.label.regencies');
+    return trans('pages-regencies::page.resource.label.regencies');
   }
 
   public static function getNavigationBadge(): ?string
@@ -59,15 +59,11 @@ class RegencyResource extends Resource
         Forms\Components\Section::make()
           ->schema([
             Forms\Components\TextInput::make('code')
-              ->label(
-                __('pages-regencies::page.field.code')
-              )
+              ->label(trans('pages-regencies::page.field.code'))
               ->required()
               ->maxLength(5),
             Forms\Components\TextInput::make('name')
-              ->label(
-                __('pages-regencies::page.field.name')
-              )
+              ->label(trans('pages-regencies::page.field.name'))
               ->required()
               ->maxLength(80),
           ])->columns(),
@@ -75,17 +71,13 @@ class RegencyResource extends Resource
           ->schema([
             Forms\Components\Select::make('province_id')
               ->relationship(name: 'province', titleAttribute: 'name')
-              ->label(
-                __('pages-regencies::page.field.province')
-              )
+              ->label(trans('pages-regencies::page.field.province'))
               ->searchable()
               ->preload()
               ->required(),
             Forms\Components\Select::make('type')
               ->options(RegencyType::toSelectArray())
-              ->label(
-                __('pages-regencies::page.field.type')
-              )
+              ->label(trans('pages-regencies::page.field.type'))
               ->preload()
               ->required()
               ->native(false),
@@ -99,28 +91,28 @@ class RegencyResource extends Resource
       ->defaultPaginationPageOption(5)
       ->columns([
         Tables\Columns\TextColumn::make('province.name')
-          ->label(__('pages-regencies::page.column.province'))
+          ->label(trans('pages-regencies::page.column.province'))
           ->numeric()
           ->sortable(),
         Tables\Columns\TextColumn::make('code')
-          ->label(__('pages-regencies::page.column.code'))
+          ->label(trans('pages-regencies::page.column.code'))
           ->searchable(),
         Tables\Columns\TextColumn::make('full_code')
-          ->label(__('pages-regencies::page.column.full_code'))
+          ->label(trans('pages-regencies::page.column.full_code'))
           ->searchable(),
         Tables\Columns\TextColumn::make('type')
-          ->label(__('pages-regencies::page.column.type'))
+          ->label(trans('pages-regencies::page.column.type'))
           ->searchable(),
         Tables\Columns\TextColumn::make('name')
-          ->label(__('pages-regencies::page.column.name'))
+          ->label(trans('pages-regencies::page.column.name'))
           ->searchable(),
         Tables\Columns\TextColumn::make('created_at')
-          ->label(__('pages-regencies::page.column.created_at'))
+          ->label(trans('pages-regencies::page.column.created_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\TextColumn::make('updated_at')
-          ->label(__('pages-regencies::page.column.updated_at'))
+          ->label(trans('pages-regencies::page.column.updated_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
@@ -128,23 +120,17 @@ class RegencyResource extends Resource
       ->filters([
         Tables\Filters\SelectFilter::make('Province')
           ->relationship('province', 'name')
-          ->label(
-            __('pages-regencies::page.column.filter.province')
-          )
+          ->label(trans('pages-regencies::page.column.filter.province'))
           ->searchable()
           ->preload()
-          ->indicator('Province'),
+          ->indicator(trans('pages-provinces::page.nav.province.label')),
 
         Tables\Filters\Filter::make('created_at')
           ->form([
             FilterDatePicker::make('created_from')
-              ->label(
-                __('pages-regencies::page.column.filter.created_from')
-              ),
+              ->label(trans('pages-regencies::page.column.filter.created_from')),
             FilterDatePicker::make('created_until')
-              ->label(
-                __('pages-regencies::page.column.filter.created_until')
-              ),
+              ->label(trans('pages-regencies::page.column.filter.created_until')),
           ])
           ->query(function (Builder $query, array $data): Builder {
             return $query
@@ -173,7 +159,8 @@ class RegencyResource extends Resource
             return $indicators;
           })->columnSpan(2)->columns(),
 
-      ], layout: Tables\Enums\FiltersLayout::AboveContent)->filtersFormColumns(3)
+      ], layout: Tables\Enums\FiltersLayout::AboveContent)
+      ->filtersFormColumns(3)
       ->actions([
         Tables\Actions\ActionGroup::make([
           Tables\Actions\ViewAction::make()
@@ -193,16 +180,16 @@ class RegencyResource extends Resource
             })
             ->successNotification(
               Notification::successNotification(
-                title: __('notification.edit.title'),
-                body: __('notification.edit.body', ['label' => __('pages-regencies::page.nav.regency.label')])
+                title: trans('notification.edit.title'),
+                body: trans('notification.edit.body', ['label' => trans('pages-regencies::page.resource.label.regency')])
               ),
             ),
           Tables\Actions\DeleteAction::make()
             ->iconSize('sm')
             ->successNotification(
               Notification::successNotification(
-                title: __('notification.delete.title'),
-                body: __('notification.delete.body', ['label' => __('pages-regencies::page.nav.regency.label')])
+                title: trans('notification.delete.title'),
+                body: trans('notification.delete.body', ['label' => trans('pages-regencies::page.resource.label.regency')])
               ),
             ),
         ])

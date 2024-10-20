@@ -21,7 +21,7 @@ class DistrictResource extends Resource
 
   public static function getNavigationIcon(): string
   {
-    return __('pages-districts::page.nav.district.icon');
+    return trans('pages-districts::page.nav.district.icon');
   }
 
   public static function getNavigationLabel(): string
@@ -31,12 +31,12 @@ class DistrictResource extends Resource
 
   public static function getModelLabel(): string
   {
-    return __('pages-districts::page.resource.label.district');
+    return trans('pages-districts::page.resource.label.district');
   }
 
   public static function getPluralModelLabel(): string
   {
-    return __('pages-districts::page.resource.label.districts');
+    return trans('pages-districts::page.resource.label.districts');
   }
 
   public static function getNavigationBadge(): ?string
@@ -58,7 +58,7 @@ class DistrictResource extends Resource
             name: 'regency',
             // titleAttribute: 'name'
           )
-          ->label(__('pages-districts::page.field.regency'))
+          ->label(trans('pages-districts::page.field.regency'))
           ->searchable()
           ->getOptionLabelFromRecordUsing(
             fn(Regency $record) => "{$record->type} {$record->name}"
@@ -66,11 +66,11 @@ class DistrictResource extends Resource
           ->preload()
           ->required(),
         Forms\Components\TextInput::make('code')
-          ->label(__('pages-districts::page.field.code'))
+          ->label(trans('pages-districts::page.field.code'))
           ->required()
           ->maxLength(5),
         Forms\Components\TextInput::make('name')
-          ->label(__('pages-districts::page.field.name'))
+          ->label(trans('pages-districts::page.field.name'))
           ->required()
           ->maxLength(50),
       ])->columns(3);
@@ -81,36 +81,47 @@ class DistrictResource extends Resource
     return $table
       ->defaultPaginationPageOption(5)
       ->columns([
+        Tables\Columns\TextColumn::make('regency.province.name')
+          ->label(trans('pages-provinces::page.nav.province.label'))
+          ->searchable(),
         Tables\Columns\TextColumn::make('regency.name')
-          ->label(__('pages-districts::page.column.regency'))
+          ->label(trans('pages-districts::page.column.regency'))
           ->getStateUsing(
             fn(District $record) => "{$record->regency->type} {$record->regency->name}"
           )
-          ->numeric()
           ->sortable(),
         Tables\Columns\TextColumn::make('code')
-          ->label(__('pages-districts::page.column.code'))
+          ->label(trans('pages-districts::page.column.code'))
           ->searchable(),
         Tables\Columns\TextColumn::make('name')
-          ->label(__('pages-districts::page.column.name'))
+          ->label(trans('pages-districts::page.column.name'))
           ->searchable(),
         Tables\Columns\TextColumn::make('full_code')
-          ->label(__('pages-districts::page.column.full_code'))
+          ->label(trans('pages-districts::page.column.full_code'))
           ->searchable(),
         Tables\Columns\TextColumn::make('created_at')
-          ->label(__('pages-districts::page.column.created_at'))
+          ->label(trans('pages-districts::page.column.created_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\TextColumn::make('updated_at')
-          ->label(__('pages-districts::page.column.updated_at'))
+          ->label(trans('pages-districts::page.column.updated_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
       ])
       ->filters([
-        //
-      ])
+        Tables\Filters\SelectFilter::make('Regency')
+          ->relationship('regency', 'name')
+          ->label(trans('pages-districts::page.column.filter.regency'))
+          ->searchable()
+          ->getOptionLabelFromRecordUsing(
+            fn(Regency $record) => "{$record->type} {$record->name}"
+          )
+          ->preload()
+          ->indicator(trans('pages-regencies::page.nav.regency.label')),
+      ], layout: Tables\Enums\FiltersLayout::AboveContent)
+      ->filtersFormColumns(2)
       ->actions([
         Tables\Actions\ActionGroup::make([
           Tables\Actions\ViewAction::make()
@@ -130,16 +141,16 @@ class DistrictResource extends Resource
             })
             ->successNotification(
               Notification::successNotification(
-                title: __('notification.edit.title'),
-                body: __('notification.edit.body', ['label' => __('pages-districts::page.nav.district.label')])
+                title: trans('notification.edit.title'),
+                body: trans('notification.edit.body', ['label' => trans('pages-districts::page.resource.label.district')])
               ),
             ),
           Tables\Actions\DeleteAction::make()
             ->iconSize('sm')
             ->successNotification(
               Notification::successNotification(
-                title: __('notification.delete.title'),
-                body: __('notification.delete.body', ['label' => __('pages-districts::page.nav.district.label')])
+                title: trans('notification.delete.title'),
+                body: trans('notification.delete.body', ['label' => trans('pages-districts::page.resource.label.district')])
               ),
             ),
         ])

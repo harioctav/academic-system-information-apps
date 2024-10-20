@@ -18,9 +18,12 @@ class ListProvinces extends ListRecords
         ->successNotification(
           Notification::successNotification(
             title: __('notification.create.title'),
-            body: __('notification.create.body', ['label' => __('pages-provinces::page.nav.province.label')])
+            body: __('notification.create.body', ['label' => __('pages-provinces::page.resource.label.province')])
           ),
-        ),
+        )
+        ->icon(trans('button.create.icon'))
+        ->iconSize('sm')
+        ->label(trans('button.create', ['label' => trans('pages-provinces::page.resource.label.province')])),
     ];
   }
 }

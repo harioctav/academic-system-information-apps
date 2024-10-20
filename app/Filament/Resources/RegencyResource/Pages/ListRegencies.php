@@ -26,10 +26,13 @@ class ListRegencies extends ListRecords
         })
         ->successNotification(
           Notification::successNotification(
-            title: __('notification.create.title'),
-            body: __('notification.create.body', ['label' => __('pages-regencies::page.nav.regency.label')])
+            title: trans('notification.create.title'),
+            body: trans('notification.create.body', ['label' => trans('pages-regencies::page.resource.label.regency')])
           ),
-        ),
+        )
+        ->icon(trans('button.create.icon'))
+        ->iconSize('sm')
+        ->label(trans('button.create', ['label' => trans('pages-regencies::page.resource.label.regency')])),
     ];
   }
 }
