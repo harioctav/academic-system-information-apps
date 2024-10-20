@@ -60,6 +60,7 @@ class AdminPanelProvider extends PanelProvider
         Widgets\FilamentInfoWidget::class,
       ])
       // ->topNavigation()
+      // ->sidebarFullyCollapsibleOnDesktop()
       ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
         return $builder
           ->items([

@@ -26,6 +26,15 @@ class District extends Model
   ];
 
   /**
+   * The relationships that should always be loaded.
+   *
+   * @var array<string>
+   */
+  protected $with = [
+    'regency.province'
+  ];
+
+  /**
    * Get the route key for the model.
    */
   public function getRouteKeyName(): string

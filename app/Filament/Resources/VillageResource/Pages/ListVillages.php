@@ -4,6 +4,7 @@ namespace App\Filament\Resources\VillageResource\Pages;
 
 use App\Filament\Resources\VillageResource;
 use App\Helpers\Notification;
+use App\Models\District;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -15,6 +16,15 @@ class ListVillages extends ListRecords
   {
     return [
       Actions\CreateAction::make()
+        ->mutateFormDataUsing(function (array $data): array {
+
+          if (isset($data['district_id'])) {
+            $district = District::findOrFail($data['district_id']);
+            $data['full_code'] = $district->full_code . $data['code'];
+          }
+
+          return $data;
+        })
         ->successNotification(
           Notification::successNotification(
             title: trans('notification.create.title'),

@@ -82,7 +82,7 @@ class DistrictResource extends Resource
       ->defaultPaginationPageOption(5)
       ->columns([
         Tables\Columns\TextColumn::make('regency.province.name')
-          ->label(trans('pages-provinces::page.nav.province.label'))
+          ->label(trans('pages-provinces::page.resource.label.province'))
           ->searchable(),
         Tables\Columns\TextColumn::make('regency.name')
           ->label(trans('pages-districts::page.column.regency'))
@@ -110,6 +110,7 @@ class DistrictResource extends Resource
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
       ])
+      ->defaultSort('name')
       ->filters([
         Tables\Filters\SelectFilter::make('Regency')
           ->relationship('regency', 'name')

@@ -89,6 +89,7 @@ class ProvinceResource extends Resource
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
       ])
+      ->defaultSort('name')
       ->filters([
         //
       ])

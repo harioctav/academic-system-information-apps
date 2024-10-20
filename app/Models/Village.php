@@ -34,6 +34,15 @@ class Village extends Model
   }
 
   /**
+   * The relationships that should always be loaded.
+   *
+   * @var array<string>
+   */
+  protected $with = [
+    'district.regency.province',
+  ];
+
+  /**
    * Get the district that owns the districts.
    *
    * @return BelongsTo

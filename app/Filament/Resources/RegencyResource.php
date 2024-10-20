@@ -161,6 +161,7 @@ class RegencyResource extends Resource
 
       ], layout: Tables\Enums\FiltersLayout::AboveContent)
       ->filtersFormColumns(3)
+      ->defaultSort('name')
       ->actions([
         Tables\Actions\ActionGroup::make([
           Tables\Actions\ViewAction::make()
