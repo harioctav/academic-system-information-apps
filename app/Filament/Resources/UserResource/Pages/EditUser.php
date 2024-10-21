@@ -4,6 +4,7 @@ namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Storage;
 
@@ -38,6 +39,14 @@ class EditUser extends EditRecord
     }
 
     return $data;
+  }
+
+  protected function getSavedNotification(): ?Notification
+  {
+    return Notification::make()
+      ->success()
+      ->title(trans('notification.edit.title'))
+      ->body(trans('notification.edit.body', ['label' => trans('pages-users::page.resource.label.user')]));
   }
 
   protected function getRedirectUrl(): string

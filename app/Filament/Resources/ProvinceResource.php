@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use stdClass;
 
 class ProvinceResource extends Resource
 {
@@ -77,19 +78,26 @@ class ProvinceResource extends Resource
     return $table
       ->defaultPaginationPageOption(5)
       ->columns([
+        Tables\Columns\TextColumn::make('No')
+          ->alignCenter()
+          ->rowIndex(),
         Tables\Columns\TextColumn::make('code')
           ->label(trans('pages-provinces::page.column.code'))
+          ->alignCenter()
           ->searchable(),
         Tables\Columns\TextColumn::make('name')
           ->label(trans('pages-provinces::page.column.name'))
+          ->alignCenter()
           ->searchable(),
         Tables\Columns\TextColumn::make('created_at')
           ->label(trans('pages-provinces::page.column.created_at'))
+          ->alignCenter()
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\TextColumn::make('updated_at')
           ->label(trans('pages-provinces::page.column.updated_at'))
+          ->alignCenter()
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),

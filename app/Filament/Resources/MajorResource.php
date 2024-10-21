@@ -104,7 +104,10 @@ class MajorResource extends Resource
       //     ->iconSize('sm')
       //     ->label(trans('button.create', ['label' => trans('pages-majors::page.resource.label.major')])),
       // ])
+      ->defaultPaginationPageOption(5)
       ->columns([
+        Tables\Columns\TextColumn::make('No')
+          ->rowIndex(),
         Tables\Columns\TextColumn::make('code')
           ->label(trans('pages-majors::page.column.code'))
           ->searchable(),
@@ -125,10 +128,12 @@ class MajorResource extends Resource
           )
           ->sortable(),
         Tables\Columns\TextColumn::make('created_at')
+          ->label(trans('pages-majors::page.column.created_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\TextColumn::make('updated_at')
+          ->label(trans('pages-majors::page.column.updated_at'))
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),

@@ -59,7 +59,13 @@ class ShieldSeeder extends Seeder
           "create_major",
           "update_major",
           "delete_major",
-          "delete_any_major"
+          "delete_any_major",
+          "view_subject",
+          "view_any_subject",
+          "create_subject",
+          "update_subject",
+          "delete_subject",
+          "delete_any_subject"
         ]
       },
       {

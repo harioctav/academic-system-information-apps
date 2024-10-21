@@ -86,7 +86,6 @@ class UserResource extends Resource
               ->tel()
               ->maxLength(25),
           ])->columns(3),
-
         Forms\Components\Grid::make(2)
           ->schema([
             Forms\Components\Section::make()

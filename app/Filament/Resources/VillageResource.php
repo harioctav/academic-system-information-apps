@@ -115,6 +115,8 @@ class VillageResource extends Resource
     return $table
       ->defaultPaginationPageOption(5)
       ->columns([
+        Tables\Columns\TextColumn::make('No')
+          ->rowIndex(),
         Tables\Columns\TextColumn::make('district.regency.province.name')
           ->label(trans('pages-provinces::page.resource.label.province'))
           ->searchable(),

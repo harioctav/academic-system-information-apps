@@ -87,6 +87,8 @@ class DistrictResource extends Resource
     return $table
       ->defaultPaginationPageOption(5)
       ->columns([
+        Tables\Columns\TextColumn::make('No')
+          ->rowIndex(),
         Tables\Columns\TextColumn::make('regency.province.name')
           ->label(trans('pages-provinces::page.resource.label.province'))
           ->searchable(),
@@ -127,8 +129,7 @@ class DistrictResource extends Resource
           )
           ->preload()
           ->indicator(trans('pages-regencies::page.nav.regency.label')),
-      ], layout: Tables\Enums\FiltersLayout::AboveContent)
-      ->filtersFormColumns(2)
+      ])
       ->actions([
         Tables\Actions\ActionGroup::make([
           Tables\Actions\ViewAction::make()

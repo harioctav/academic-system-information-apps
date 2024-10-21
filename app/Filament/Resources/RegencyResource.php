@@ -95,6 +95,8 @@ class RegencyResource extends Resource
     return $table
       ->defaultPaginationPageOption(5)
       ->columns([
+        Tables\Columns\TextColumn::make('No')
+          ->rowIndex(),
         Tables\Columns\TextColumn::make('province.name')
           ->label(trans('pages-regencies::page.column.province'))
           ->numeric()
@@ -164,7 +166,7 @@ class RegencyResource extends Resource
             return $indicators;
           })->columnSpan(2)->columns(),
 
-      ], layout: Tables\Enums\FiltersLayout::AboveContent)
+      ])
       ->filtersFormColumns(3)
       ->defaultSort('name')
       ->actions([
