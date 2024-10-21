@@ -6,6 +6,7 @@ use App\Enums\GeneralConstant;
 use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
+use App\Helpers\Notification;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -219,6 +220,12 @@ class UserResource extends Resource
             ->iconSize('sm')
             ->visible(
               fn(Model $record) => $record->roles->implode('name') !== UserRole::SuperAdmin->value
+            )
+            ->successNotification(
+              Notification::successNotification(
+                title: trans('notification.edit.title'),
+                body: trans('notification.edit.body', ['label' => trans('pages-users::page.resource.label.user')])
+              ),
             ),
           Tables\Actions\DeleteAction::make()
             ->iconSize('sm')
@@ -227,7 +234,13 @@ class UserResource extends Resource
               $isActive = $record->status->value !== GeneralConstant::InActive->value;
 
               return $isSuperAdmin || ($isActive && !$isSuperAdmin);
-            }),
+            })
+            ->successNotification(
+              Notification::successNotification(
+                title: trans('notification.delete.title'),
+                body: trans('notification.delete.body', ['label' => trans('pages-users::page.resource.label.user')])
+              ),
+            ),
         ])
           ->button()
           ->size(ActionSize::Small)

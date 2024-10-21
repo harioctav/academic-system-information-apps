@@ -63,6 +63,7 @@ class AdminPanelProvider extends PanelProvider
         Widgets\FilamentInfoWidget::class,
       ])
       ->navigationGroups([
+        trans('navigations.academics.group'),
         trans('navigations.settings.group'),
         trans('navigations.regions.group'),
       ])

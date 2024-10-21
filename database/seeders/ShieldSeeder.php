@@ -53,7 +53,13 @@ class ShieldSeeder extends Seeder
           "create_village",
           "update_village",
           "delete_village",
-          "delete_any_village"
+          "delete_any_village",
+          "view_major",
+          "view_any_major",
+          "create_major",
+          "update_major",
+          "delete_major",
+          "delete_any_major"
         ]
       },
       {

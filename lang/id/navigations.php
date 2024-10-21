@@ -1,10 +1,7 @@
 <?php
 
 return [
-  'settings' => [
-    'navigation.group' => 'Manajemen Pengguna',
-  ],
-  'regions' => [
-    'navigation.group' => 'Manajemen Wilayah'
-  ]
+  'academics.group' => 'Bidang Akademik',
+  'settings.group' => 'Manajemen Pengguna',
+  'regions.group' => 'Manajemen Wilayah',
 ];
