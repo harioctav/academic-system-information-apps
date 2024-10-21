@@ -6,6 +6,7 @@ use App\Enums\DegreeType;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Major extends Model
 {
@@ -37,7 +38,24 @@ class Major extends Model
    *
    * @return array<string, string>
    */
-  protected $casts = [
-    'degree' => DegreeType::class
-  ];
+  protected function casts(): array
+  {
+    return [
+      'degree' => DegreeType::class
+    ];
+  }
+
+  /**
+   * Get the subjects associated with this major.
+   *
+   * @return BelongsToMany
+   */
+  public function subjects(): BelongsToMany
+  {
+    return $this->belongsToMany(
+      Subject::class,
+      'major_has_subjects'
+    )->using(MajorHasSubject::class)
+      ->withPivot('semester');
+  }
 }

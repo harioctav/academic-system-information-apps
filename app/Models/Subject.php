@@ -6,6 +6,7 @@ use App\Enums\SubjectStatus;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Subject extends Model
 {
@@ -39,7 +40,25 @@ class Subject extends Model
    *
    * @return array<string, string>
    */
-  protected $casts = [
-    'status' => SubjectStatus::class,
-  ];
+  protected function casts(): array
+  {
+    return [
+      'status' => SubjectStatus::class
+    ];
+  }
+
+  /**
+   * Get the majors that are associated with this subject.
+   *
+   * @return BelongsToMany
+   */
+  public function majors(): BelongsToMany
+  {
+    return $this->belongsToMany(
+      Major::class,
+      'major_has_subjects'
+    )
+      ->using(MajorHasSubject::class)
+      ->withPivot('semester');
+  }
 }
