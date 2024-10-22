@@ -15,7 +15,7 @@ class MajorSubjectImport implements ToCollection, WithHeadingRow
 {
   protected $errors = [];
   protected $imported = 0;
-  protected  $skipped = 0;
+  protected $skipped = 0;
   protected $feedbackMessage = '';
 
   /**
@@ -24,8 +24,10 @@ class MajorSubjectImport implements ToCollection, WithHeadingRow
   public function collection(Collection $collection)
   {
     try {
-
       DB::beginTransaction();
+
+      // Temporarily disable observer for bulk operations
+      Major::unsetEventDispatcher();
 
       $existingMajors = Major::pluck('id', 'code')->toArray();
       $existingSubjects = Subject::pluck('id', 'code')->toArray();
@@ -47,16 +49,22 @@ class MajorSubjectImport implements ToCollection, WithHeadingRow
       $updatedRelationsCount = 0;
 
       foreach ($collection as $row) {
-        $majorCode = trim($row['kode_jurusan']);
-        $majorName = trim($row['jurusan']) ?: null;
-        $majorDegree = trim($row['jenjang_jurusan']) ?: null;
-        $subjectCode = trim($row['kode']);
-        $subjectName = trim($row['matakuliah']) ?: null;
-        $semester = trim($row['semester']);
-        $courseCredit = trim($row['sks']) ?: 0;
-        $subjectStatus = trim($row['status_matakuliah']);
-        $examTime = trim($row['waktu_ujian']);
-        $subjectNote = trim($row['keterangan']) ?: null;
+        $majorCode = trim($row['kode_jurusan'] ?? '');
+        $majorName = trim($row['jurusan'] ?? '') ?: null;
+        $majorDegree = trim($row['jenjang_jurusan'] ?? '') ?: null;
+        $subjectCode = trim($row['kode'] ?? '');
+        $subjectName = trim($row['matakuliah'] ?? '') ?: null;
+        $semester = trim($row['semester'] ?? '');
+        $courseCredit = trim($row['sks'] ?? '') ?: 0;
+        $subjectStatus = trim($row['status_matakuliah'] ?? '');
+        $examTime = trim($row['waktu_ujian'] ?? '');
+        $subjectNote = trim($row['keterangan'] ?? '') ?: null;
+
+        // Validate required fields
+        if (empty($majorCode) || empty($subjectCode)) {
+          $this->errors[] = "Baris dilewati: Kode jurusan atau kode mata kuliah kosong.";
+          continue;
+        }
 
         // Handle Major
         if (!isset($uniqueMajors[$majorCode])) {
@@ -112,17 +120,31 @@ class MajorSubjectImport implements ToCollection, WithHeadingRow
 
       // Bulk update and insert Majors
       foreach ($majorsToUpdate as $id => $data) {
-        Major::where('id', $id)->update($data);
+        try {
+          Major::where('id', $id)->update($data);
+        } catch (\Exception $e) {
+          $this->errors[] = "Error updating major ID {$id}: " . $e->getMessage();
+        }
       }
 
-      Major::insert($majorsToInsert);
+      if (!empty($majorsToInsert)) {
+        try {
+          Major::insert($majorsToInsert);
+        } catch (\Exception $e) {
+          $this->errors[] = "Error inserting new majors: " . $e->getMessage();
+        }
+      }
 
       // Bulk upsert Subjects
       foreach ($subjectsToUpsert as $subject) {
-        Subject::updateOrInsert(
-          ['code' => $subject['code']],
-          $subject
-        );
+        try {
+          Subject::updateOrInsert(
+            ['code' => $subject['code']],
+            $subject
+          );
+        } catch (\Exception $e) {
+          $this->errors[] = "Error upserting subject {$subject['code']}: " . $e->getMessage();
+        }
       }
 
       // Refresh majors and subjects after bulk operations
@@ -134,9 +156,12 @@ class MajorSubjectImport implements ToCollection, WithHeadingRow
         $majorId = $majors[$relation['major_code']] ?? null;
         $subjectId = $subjects[$relation['subject_code']] ?? null;
 
-        $major = Major::findOrFail($majorId);
+        if (!$majorId || !$subjectId) {
+          $this->errors[] = "Skipping relation: Major {$relation['major_code']} or Subject {$relation['subject_code']} not found.";
+          continue;
+        }
 
-        if ($majorId && $subjectId) {
+        try {
           $updated = DB::table('major_has_subjects')->updateOrInsert(
             [
               'major_id' => $majorId,
@@ -155,10 +180,21 @@ class MajorSubjectImport implements ToCollection, WithHeadingRow
           } else {
             $newRelationsCount++;
           }
+        } catch (\Exception $e) {
+          $this->errors[] = "Error processing relation for major {$relation['major_code']}: " . $e->getMessage();
+        }
+      }
 
-          $major->updateTotalCourseCredit();
-        } else {
-          $this->errors[] = "Relation not created: Major {$relation['major_code']} or Subject {$relation['subject_code']} not found.";
+      // Update total credits untuk semua major yang terpengaruh
+      $processedMajorIds = array_unique(array_values($majors));
+      foreach ($processedMajorIds as $majorId) {
+        try {
+          $major = Major::find($majorId);
+          if ($major) {
+            $major->updateTotalCourseCredit(true);
+          }
+        } catch (\Exception $e) {
+          $this->errors[] = "Error updating total credit for major ID {$majorId}: " . $e->getMessage();
         }
       }
 
@@ -175,11 +211,18 @@ class MajorSubjectImport implements ToCollection, WithHeadingRow
       $this->feedbackMessage .= "- Mata kuliah diperbarui: {$updatedSubjectsCount}\n";
       $this->feedbackMessage .= "- Relasi jurusan-mata kuliah baru: {$newRelationsCount}\n";
       $this->feedbackMessage .= "- Relasi jurusan-mata kuliah diperbarui: {$updatedRelationsCount}\n";
+
+      if (!empty($this->errors)) {
+        $this->feedbackMessage .= "\nPeringatan:\n" . implode("\n", $this->errors);
+      }
     } catch (\Exception $e) {
       DB::rollBack();
       Log::error('Error importing: ' . $e->getMessage());
       $this->errors[] = 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage();
       $this->feedbackMessage = 'Terjadi kesalahan saat mengimpor data. Silakan periksa log untuk detail lebih lanjut.';
+    } finally {
+      // Make sure observer is re-enabled even if there's an error
+      Major::setEventDispatcher(app()->make('events'));
     }
   }
 
