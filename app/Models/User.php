@@ -5,10 +5,12 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\GeneralConstant;
+use App\Enums\UserRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -125,5 +127,44 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     }
 
     return $this->cachedAvatarUrl;
+  }
+
+  /**
+   * Scope a query to only include active users.
+   * 
+   */
+  public function scopeActive($data)
+  {
+    return $data->where('status', true);
+  }
+
+  public function getActive(): Collection
+  {
+    return $this->active()->get();
+  }
+
+
+  /**
+   * Scope a query to only include users that are not administrators.
+   *
+   * @param \Illuminate\Database\Eloquent\Builder $query
+   * @return \Illuminate\Database\Eloquent\Builder
+   */
+  public function scopeWhereNotAdmin($query)
+  {
+    return $query->whereDoesntHave('roles', function ($row) {
+      $row->where('name', UserRole::SuperAdmin->value);
+    });
+  }
+
+  /**
+   * Scope a query to only include users that are administrators.
+   *
+   */
+  public function scopeIsAdmin($query)
+  {
+    return $query->whereHas('roles', function ($row) {
+      $row->where('name', UserRole::SuperAdmin->value);
+    });
   }
 }

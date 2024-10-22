@@ -73,6 +73,7 @@ class AdminPanelProvider extends PanelProvider
         'profile' => MenuItem::make()->label('Edit profile'),
       ])
       ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
+      ->databaseNotifications()
       ->plugins([
         \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
           ->gridColumns([

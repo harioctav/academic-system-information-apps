@@ -4,11 +4,14 @@ namespace App\Models;
 
 use App\Enums\DegreeType;
 use App\Enums\SubjectNote;
+use App\Observers\Academics\MajorObserve;
 use App\Traits\Uuid;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+#[ObservedBy(MajorObserve::class)]
 class Major extends Model
 {
   use HasFactory, Uuid;

@@ -95,19 +95,6 @@ class MajorResource extends Resource
   public static function table(Table $table): Table
   {
     return $table
-      // ->headerActions([
-      //   Tables\Actions\CreateAction::make()
-      //     ->successNotification(
-      //       Notification::successNotification(
-      //         title: trans('notification.create.title'),
-      //         body: trans('notification.create.body', ['label' => trans('pages-majors::page.resource.label.major')])
-      //       ),
-      //     )
-      //     ->size(ActionSize::Small)
-      //     ->icon(trans('button.create.icon'))
-      //     ->iconSize('sm')
-      //     ->label(trans('button.create', ['label' => trans('pages-majors::page.resource.label.major')])),
-      // ])
       ->defaultPaginationPageOption(5)
       ->columns([
         Tables\Columns\TextColumn::make('No')
