@@ -14,10 +14,15 @@ return [
   'column.degree' => 'Jenjang atau Tingkatan',
   'column.total_course_credit' => 'Total Jumlah SKS',
   'column.filter.degree' => 'Filter berdasarkan Jenjang',
+  'column.filter.semester' => 'Filter berdasarkan Semester',
   'column.filter.created_from' => 'Dibuat dari',
   'column.filter.created_until' => 'Dibuat sampai',
   'column.created_at' => 'Dibuat Pada',
   'column.updated_at' => 'Diubah Pada',
+
+  // Infolist
+  'infolist.title' => 'Program Studi',
+  'infolist.description' => 'Detail data Program Studi :name',
 
   // Form Fields
   'field.code' => 'Kode',

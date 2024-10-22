@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class MajorHasSubject extends Model
+class MajorHasSubject extends Pivot
 {
   use Uuid;
 
@@ -27,5 +29,25 @@ class MajorHasSubject extends Model
   public function getRouteKeyName(): string
   {
     return 'uuid';
+  }
+
+  /**
+   * Get the major associated with this subject.
+   *
+   * @return BelongsTo
+   */
+  public function major(): BelongsTo
+  {
+    return $this->belongsTo(Major::class);
+  }
+
+  /**
+   * Get the subject associated with this major.
+   *
+   * @return BelongsTo
+   */
+  public function subject(): BelongsTo
+  {
+    return $this->belongsTo(Subject::class);
   }
 }

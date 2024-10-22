@@ -5,10 +5,14 @@ namespace App\Filament\Resources;
 use App\Enums\DegreeType;
 use App\Filament\Resources\MajorResource\Pages;
 use App\Filament\Resources\MajorResource\RelationManagers;
+use App\Filament\Resources\MajorResource\RelationManagers\SubjectsRelationManager;
+use Filament\Infolists\Infolist;
 use App\Helpers\Notification;
 use App\Models\Major;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\ActionSize;
 use Filament\Tables;
@@ -54,7 +58,7 @@ class MajorResource extends Resource
 
   public static function getNavigationBadgeColor(): ?string
   {
-    return static::getModel()::count() > 10 ? 'warning' : 'primary';
+    return static::getModel()::count() > 100 ? 'warning' : 'primary';
   }
 
   public static function form(Form $form): Form
@@ -108,9 +112,6 @@ class MajorResource extends Resource
       ->columns([
         Tables\Columns\TextColumn::make('No')
           ->rowIndex(),
-        Tables\Columns\TextColumn::make('code')
-          ->label(trans('pages-majors::page.column.code'))
-          ->searchable(),
         Tables\Columns\TextColumn::make('name')
           ->label(trans('pages-majors::page.column.name'))
           ->searchable()
@@ -182,10 +183,34 @@ class MajorResource extends Resource
       ]);
   }
 
+  public static function infolist(Infolist $infolist): Infolist
+  {
+    return $infolist
+      ->schema([
+        Section::make(trans('pages-majors::page.infolist.title'))
+          ->description(trans('pages-majors::page.infolist.description', ['name' => $infolist->getRecord()->name]))
+          ->icon('heroicon-o-exclamation-circle')
+          ->iconColor('info')
+          ->columns(2)
+          ->schema([
+            TextEntry::make('code')
+              ->label(trans('pages-majors::page.column.code')),
+            TextEntry::make('name')
+              ->label(trans('pages-majors::page.column.name')),
+            TextEntry::make('total_course_credit')
+              ->label(trans('pages-majors::page.column.total_course_credit'))
+              ->getStateUsing(fn(Model $record) => $record->total_course_credit ?: '-'),
+            TextEntry::make('degree')
+              ->label(trans('pages-majors::page.column.degree'))
+              ->getStateUsing(fn(Model $record) => DegreeType::from($record->degree->value)->label()),
+          ])
+      ]);
+  }
+
   public static function getRelations(): array
   {
     return [
-      //
+      SubjectsRelationManager::class
     ];
   }
 

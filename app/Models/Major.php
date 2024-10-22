@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\DegreeType;
+use App\Enums\SubjectNote;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -57,5 +58,41 @@ class Major extends Model
       'major_has_subjects'
     )->using(MajorHasSubject::class)
       ->withPivot('semester');
+  }
+
+  /**
+   * Updates the total course credit for the major.
+   *
+   * This method calculates the total course credit for the major by iterating through the subjects associated with the major. It separates the subjects into two groups: those with "PILIH SALAH SATU" in the note, and those without. It then adds up the course credits for the subjects without "PILIH SALAH SATU", and for the subjects with "PILIH SALAH SATU", it adds the maximum course credit from that group. Finally, it updates the `total_course_credit` column in the `majors` table for this major.
+   */
+  public function updateTotalCourseCredit()
+  {
+    $totalCourseCredit = 0;
+    $subjects = $this->subjects;
+    $subjectsBySemester = $subjects->groupBy('pivot.semester');
+
+    foreach ($subjectsBySemester as $semester => $subjects) {
+      // Pisahkan mata kuliah berdasarkan "PILIH SALAH SATU"
+      $withPilihSalahSatu = $subjects->filter(function ($subject) {
+        return str_contains($subject->note, SubjectNote::PS->value);
+      });
+
+      $withoutPilihSalahSatu = $subjects->filter(function ($subject) {
+        return !str_contains($subject->note, SubjectNote::PS->value);
+      });
+
+      // Tambahkan total SKS dari mata kuliah tanpa "PILIH SALAH SATU"
+      foreach ($withoutPilihSalahSatu as $subject) {
+        $totalCourseCredit += $subject->course_credit; // Mengambil SKS dari kolom course_credit di tabel subjects
+      }
+
+      // Jika ada mata kuliah "PILIH SALAH SATU", hanya tambahkan salah satu dari grup ini
+      if ($withPilihSalahSatu->isNotEmpty()) {
+        $totalCourseCredit += $withPilihSalahSatu->max()->course_credit;
+      }
+    }
+
+    // Update nilai total_course_credit pada tabel majors
+    $this->update(['total_course_credit' => $totalCourseCredit]);
   }
 }

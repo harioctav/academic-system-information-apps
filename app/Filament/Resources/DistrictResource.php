@@ -52,7 +52,7 @@ class DistrictResource extends Resource
 
   public static function getNavigationBadgeColor(): ?string
   {
-    return static::getModel()::count() > 10 ? 'warning' : 'primary';
+    return static::getModel()::count() > 100 ? 'warning' : 'primary';
   }
 
   public static function form(Form $form): Form
